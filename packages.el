@@ -41,3 +41,7 @@
 ;; This is required for some packages whose default branch isn't 'master' (which
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
+
+(package! lsp-mode :recipe (:host github :repo "ofrank123/lsp-mode"))
+(package! gdscript-mode :recipe (:host github :repo "ofrank123/emacs-gdscript-mode"))
+;;(package! godot-gdscript :recipe (:host github :repo "francogarcia/godot-gdscript.el"))

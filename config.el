@@ -28,6 +28,26 @@
 
 ;; Set Omnisharp-Roslyn Executable
 
+;; Here are some additional functions/macros that could help you configure Doom:
+;;
+;; - `load!' for loading external *.el files relative to this one
+;; - `use-package' for configuring packages
+;; - `after!' for running code after a package has loaded
+;; - `add-load-path!' for adding directories to the `load-path', where Emacs
+;;   looks when you load packages with `require' or `use-package'.
+;; - `map!' for binding new keys
+;;
+;; To get information about any of these functions/macros, move the cursor over
+;; the highlighted symbol at press 'K' (non-evil users must press 'C-c g k').
+;; This will open documentation for it, including demos of how they are used.
+;;
+;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
+;; they are implemented.
+
+;; Custom stuff
+(require 'gdscript-mode)
+
+
 ;; Org Config
 ;; If you intend to use org, it is recommended you change this!
 (setq org-directory "~/org/")
@@ -70,26 +90,46 @@
 (add-hook 'org-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'variable-pitch-mode)
 
+
+
+(after! company-lsp
+  (add-to-list 'company-lsp-filter-candidates '(gdscript . t))
+  (setq company-lsp-cache-candidates 'auto)
+
+  (defun company-lsp--on-completion (response prefix)
+    "Handle completion RESPONSE.
+
+PREFIX is a string of the prefix when the completion is requested.
+
+Return a list of strings as the completion candidates."
+    (let* ((incomplete (and (hash-table-p response) (gethash "isIncomplete" response)))
+           (items (cond ((hash-table-p response) (gethash "items" response))
+                        ((sequencep response) response)))
+           (candidates (mapcar (lambda (item)
+                                 (company-lsp--make-candidate item prefix))
+                               (lsp--sort-completions items)))
+           (server-id (lsp--client-server-id (lsp--workspace-client lsp--cur-workspace)))
+           (should-filter (or (eq company-lsp-cache-candidates 'auto)
+                              (and (null company-lsp-cache-candidates)
+                                   (company-lsp--get-config company-lsp-filter-candidates server-id)))))
+      (when (null company-lsp--completion-cache)
+        (add-hook 'company-completion-cancelled-hook #'company-lsp--cleanup-cache nil t)
+        (add-hook 'company-completion-finished-hook #'company-lsp--cleanup-cache nil t))
+      (when (eq company-lsp-cache-candidates 'auto)
+        ;; Only cache candidates on auto mode. If it's t company caches the
+        ;; candidates for us.
+        (company-lsp--cache-put prefix (company-lsp--cache-item-new candidates incomplete)))
+      (if should-filter
+          (company-lsp--filter-candidates candidates prefix)
+        candidates))))
+
+
 ;; If you want to change the style of line numbers, change this to `relative' or
 ;; `nil' to disable it:
 (setq display-line-numbers-type t)
 
-
-;; Here are some additional functions/macros that could help you configure Doom:
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', where Emacs
-;;   looks when you load packages with `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c g k').
-;; This will open documentation for it, including demos of how they are used.
-;;
-;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
-;; they are implemented.
-
 (after! omnisharp
   (setq omnisharp-server-executable-path "~/.doom.d/omnisharp-mono/omnisharp.sh"))
+
+(after! lsp
+  (setq lsp-log-io t))
