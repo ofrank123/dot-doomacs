@@ -43,3 +43,6 @@
 ;(package! builtin-package :recipe (:branch "develop"))
 
 (package! gradle-mode)
+(package! lsp-mode :recipe (:host github :repo "ofrank123/lsp-mode"))
+(package! gdscript-mode :recipe (:host github :repo "ofrank123/emacs-gdscript-mode"))
+;;(package! godot-gdscript :recipe (:host github :repo "francogarcia/godot-gdscript.el"))
