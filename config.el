@@ -93,3 +93,6 @@
 
 (after! omnisharp
   (setq omnisharp-server-executable-path "~/.doom.d/omnisharp-mono/omnisharp.sh"))
+
+(after! gradle-mode
+  (gradle-mode 1))
