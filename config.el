@@ -28,8 +28,7 @@
 
 ;; Set Omnisharp-Roslyn Executable
 
-;; Here are some additional functions/macros that could help you configure Doom:
-;;
+;; Here are some additional functions/macros that could help you configure Doom: ;;
 ;; - `load!' for loading external *.el files relative to this one
 ;; - `use-package' for configuring packages
 ;; - `after!' for running code after a package has loaded
@@ -45,6 +44,7 @@
 ;; they are implemented.
 
 ;; Custom stuff
+(setq gdscript-flycheck-linter t)
 (require 'gdscript-mode)
 
 (require 'graphql-mode)
