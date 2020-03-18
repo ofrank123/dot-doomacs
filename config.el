@@ -47,6 +47,20 @@
 ;; Custom stuff
 (require 'gdscript-mode)
 
+(require 'graphql-mode)
+(require 'mmm-mode)
+
+(mmm-add-classes
+    '((js-graphql
+          :submode graphql-mode
+          :face mmm-declaration-submode-face
+          :front "[^a-zA-Z]graphql`" ;; regex to find the opening tag
+          :back "`"))) ;; regex to find the closing tag
+(mmm-add-mode-ext-class 'rjsx-mode nil 'js-graphql)
+(setq mmm-global-mode 'maybe)
+;; Optional configuration that hides the background color for a highlighted block
+;; I find it useful for debugging emacs, but when actually coding I dont want so much emphasis on submodes
+(setq mmm-submode-decoration-level 1)
 
 ;; Org Config
 ;; If you intend to use org, it is recommended you change this!
@@ -133,5 +147,6 @@ Return a list of strings as the completion candidates."
 
 (after! gradle-mode
   (gradle-mode 1))
-(after! lsp
-  (setq lsp-log-io t))
+
+;; (after! lsp-mode
+;;   (setq lsp-log-io t))
